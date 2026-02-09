@@ -423,51 +423,62 @@ section {
 .site-footer {
 	background: var(--card);
 	border-top: 1px solid var(--border);
-	padding: 40px 0 20px;
+	padding: 16px 0;
 	margin-top: 60px;
 	color: var(--text-muted);
-	font-size: 14px;
+	font-size: 13px;
+	position: sticky;
+	bottom: 0;
+	z-index: 50;
+	box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+	animation: slideUp 0.3s ease 0.1s both;
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+html[data-theme="dark"] .site-footer {
+	box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .footer-content {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 32px;
-	margin-bottom: 32px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
 }
 
-.footer-section h4 {
-	color: var(--text);
-	margin-top: 0;
-	font-size: 14px;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-}
-
-.footer-section ul {
+.footer-links {
+	display: flex;
+	gap: 20px;
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
 
-.footer-section a {
+.footer-links a {
 	color: var(--text-muted);
 	text-decoration: none;
-	font-size: 13px;
-	display: block;
-	margin: 8px 0;
+	font-size: 12px;
 	transition: color 0.2s ease;
 }
 
-.footer-section a:hover {
+.footer-links a:hover {
 	color: var(--accent);
+	text-decoration: underline;
 }
 
-.footer-bottom {
-	border-top: 1px solid var(--border);
-	padding-top: 20px;
-	text-align: center;
-	font-size: 12px;
+.footer-credit {
+	font-size: 11px;
+	white-space: nowrap;
 }
 
 /* Links */
@@ -536,8 +547,18 @@ a:hover {
 	}
 
 	.footer-content {
-		grid-template-columns: 1fr;
-		gap: 20px;
+		flex-direction: column;
+		gap: 12px;
+		align-items: flex-start;
+	}
+
+	.footer-links {
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.footer-links a {
+		font-size: 11px;
 	}
 }
 
@@ -572,5 +593,29 @@ a:hover {
 
 	section {
 		margin: 20px 0;
+	}
+
+	.site-footer {
+		padding: 12px 0;
+	}
+
+	.footer-content {
+		flex-direction: column;
+		gap: 8px;
+		align-items: center;
+		text-align: center;
+	}
+
+	.footer-links {
+		gap: 8px;
+		justify-content: center;
+	}
+
+	.footer-links a {
+		font-size: 10px;
+	}
+
+	.footer-credit {
+		font-size: 10px;
 	}
 }
