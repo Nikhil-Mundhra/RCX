@@ -63,29 +63,78 @@ async function getCurrentUser() {
   return null;
 }
 
+// Validation helper
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function showMessage(elementId, message, isError = true) {
+  const messageEl = document.getElementById(elementId);
+  if (!messageEl) return;
+  messageEl.textContent = message;
+  messageEl.className = isError ? 'auth-message error' : 'auth-message success';
+  messageEl.style.display = 'block';
+}
+
+function clearMessage(elementId) {
+  const messageEl = document.getElementById(elementId);
+  if (messageEl) {
+    messageEl.textContent = '';
+    messageEl.style.display = 'none';
+  }
+}
+
 // Signup form
 const signupForm = document.getElementById('signupForm');
+console.debug('[auth.js] found signupForm?', !!signupForm);
 if (signupForm) {
+  console.debug('[auth.js] attaching signup event listener');
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    clearMessage('signupMessage');
+    
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+    
+    // Client-side validation
+    if (!email) {
+      showMessage('signupMessage', 'Email address is required', true);
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      showMessage('signupMessage', 'Please enter a valid email address', true);
+      return;
+    }
+    
+    if (!password) {
+      showMessage('signupMessage', 'Password is required', true);
+      return;
+    }
+    
+    if (password.length < 6) {
+      showMessage('signupMessage', 'Password must be at least 6 characters long', true);
+      return;
+    }
+    
     try {
       console.debug('[signup] submitting signup for', email);
       const res = await postJSON('/api/auth/register', { name, email, password });
       if (res && res.token) {
         try { localStorage.setItem('rcx_token', res.token); } catch (e) { console.error('Failed to save token', e); }
-        // store a short-lived welcome flag for the dashboard to show a greeting
         try { localStorage.setItem('rcx_welcome', (res.user && (res.user.name || res.user.email)) || email || 'User'); } catch (e) { console.error('Failed to save welcome flag', e); }
-        // use replace so back button doesn't return to signup
-        window.location.replace('/dashboard.html');
+        showMessage('signupMessage', `Welcome ${res.user?.name || email}! Redirecting to dashboard...`, false);
+        setTimeout(() => {
+          window.location.replace('/dashboard.html');
+        }, 1500);
         return;
       }
-      alert((res && res.error) || 'Registration failed');
+      showMessage('signupMessage', (res && res.error) || 'Registration failed', true);
     } catch (err) {
       console.error('[signup] Signup failed', err);
-      alert('Signup error — check console');
+      showMessage('signupMessage', 'Signup error — please try again', true);
     }
   });
 }
@@ -95,20 +144,42 @@ const loginForm = document.getElementById('loginForm');
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('email').value;
+    clearMessage('loginMessage');
+    
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+    
+    // Client-side validation
+    if (!email) {
+      showMessage('loginMessage', 'Email address is required', true);
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      showMessage('loginMessage', 'Please enter a valid email address', true);
+      return;
+    }
+    
+    if (!password) {
+      showMessage('loginMessage', 'Password is required', true);
+      return;
+    }
+    
     try {
       console.debug('[login] submitting login for', email);
       const res = await postJSON('/api/auth/login', { email, password });
       if (res && res.token) {
         try { localStorage.setItem('rcx_token', res.token); } catch (e) { console.error('Failed to save token', e); }
-        window.location.replace('/dashboard.html');
+        showMessage('loginMessage', `Welcome back, ${res.user?.name || email}! Redirecting...`, false);
+        setTimeout(() => {
+          window.location.replace('/dashboard.html');
+        }, 1500);
         return;
       }
-      alert((res && res.error) || 'Login failed');
+      showMessage('loginMessage', (res && res.error) || 'Login failed', true);
     } catch (err) {
       console.error('[login] Login failed', err);
-      alert('Login error — check console');
+      showMessage('loginMessage', 'Login error — please try again', true);
     }
   });
 }
