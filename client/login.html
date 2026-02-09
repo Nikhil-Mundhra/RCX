@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Log In — RCX</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>form { max-width:420px; margin-top:12px } input{display:block;width:100%;padding:8px;margin:8px 0}</style>
+  </head>
+  <body>
+    <div class="card" style="padding:20px;max-width:520px;margin:24px auto">
+      <h2>Log in</h2>
+      <form id="loginForm">
+        <input id="email" placeholder="Email" type="email" required />
+        <input id="password" placeholder="Password" type="password" required />
+        <button type="submit">Log in</button>
+      </form>
+      <p>No account? <a href="/client/signup.html">Sign up</a></p>
+    </div>
+    <script src="/client/auth.js"></script>
+  </body>
+</html>

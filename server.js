@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 
 const app = express();
 app.use(cors());
@@ -22,6 +26,22 @@ const portfolios = [
   { id: 1, name: 'Income Focused', holdings: [{ propertyId: 1, weight: 0.7 }, { propertyId: 2, weight: 0.3 }] },
   { id: 2, name: 'Growth Focused', holdings: [{ propertyId: 1, weight: 0.3 }, { propertyId: 2, weight: 0.7 }] }
 ];
+
+// Simple in-memory user store for demo
+const users = [];
+
+function authMiddleware(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'Missing token' });
+  const token = auth.split(' ')[1];
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    next();
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+}
 
 // Generate valuation history (monthly) for demo
 function generateHistory(base, months = 24, volatility = 0.02) {
@@ -124,6 +144,35 @@ app.get('/api/benchmark', (req, res) => {
   const start = 1000000;
   const series = generateHistory(start, months, 0.025).map(s => ({ date: s.date, value: s.value }));
   res.json(series);
+});
+
+// --- Auth endpoints (demo only) ---
+app.post('/api/auth/register', async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'email and password required' });
+  if (users.find(u => u.email === email)) return res.status(400).json({ error: 'User exists' });
+  const hash = await bcrypt.hash(password, 10);
+  const id = users.length ? users[users.length - 1].id + 1 : 1;
+  const user = { id, name: name || '', email, passwordHash: hash };
+  users.push(user);
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+  res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email } });
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find(u => u.email === email);
+  if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+  const ok = await bcrypt.compare(password, user.passwordHash);
+  if (!ok) return res.status(400).json({ error: 'Invalid credentials' });
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+  res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+});
+
+app.get('/api/auth/me', authMiddleware, (req, res) => {
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ error: 'Not found' });
+  res.json({ id: user.id, name: user.name, email: user.email });
 });
 
 app.post('/api/properties', (req, res) => {

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up — RCX</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>form { max-width:420px; margin-top:12px } input{display:block;width:100%;padding:8px;margin:8px 0}</style>
+  </head>
+  <body>
+    <div class="card" style="padding:20px;max-width:520px;margin:24px auto">
+      <h2>Create an account</h2>
+      <form id="signupForm">
+        <input id="name" placeholder="Full name (optional)" />
+        <input id="email" placeholder="Email" type="email" required />
+        <input id="password" placeholder="Password" type="password" required />
+        <button type="submit">Sign up</button>
+      </form>
+      <p>Already have an account? <a href="/client/login.html">Log in</a></p>
+    </div>
+    <script src="/client/auth.js"></script>
+  </body>
+</html>
