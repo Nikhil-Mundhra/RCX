@@ -11,10 +11,19 @@
     </style>
   </head>
   <body>
-    <header>
-      <h1>RCX — Property Stock Exchange (Demo)</h1>
-      <p>Minimal demo client for the Node.js scaffold.</p>
+    <header class="site-header container">
+      <div class="brand">RCX — Property Stock Exchange</div>
+      <nav class="nav">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/client/signup.html">Sign up</a>
+        <a href="/client/login.html">Log in</a>
+      </nav>
     </header>
+    <main class="container">
+      <section style="margin-top:18px">
+        <h2>Welcome to the RCX demo</h2>
+        <p class="muted">Explore portfolios, compare metrics, and sign up to try the demo auth flow.</p>
+      </section>
 
     <section>
       <h2>Markets</h2>
@@ -34,5 +43,6 @@
     </section>
 
     <script src="/app.js"></script>
+    </main>
   </body>
 </html>

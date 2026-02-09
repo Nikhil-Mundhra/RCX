@@ -1,3 +1,38 @@
-body { background: #f3f6f9 }
-canvas { max-width: 100% }
-.card { box-shadow: 0 1px 2px rgba(0,0,0,0.04) }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root{
+	--bg:#f4f7fb; --card:#ffffff; --muted:#6b7280; --accent:#0b74ff; --accent-2:#ff7b00;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body {
+	background: var(--bg);
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	color:#0f172a;
+	margin:0; padding:0 18px 48px;
+}
+
+.site-header{max-width:1100px;margin:18px auto;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--accent)}
+.nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+
+.container{max-width:1100px;margin:0 auto}
+.card{background:var(--card);border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(12,24,48,0.06);}
+
+form input, form button, input[type=file], select, textarea{font-family:inherit}
+input, select, textarea{padding:10px;border:1px solid #e6e9ef;border-radius:8px;width:100%;margin:8px 0}
+button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+button.secondary{background:var(--accent-2)}
+
+.controls{display:flex;gap:8px;align-items:center}
+.controls select{width:auto}
+
+.metrics{display:flex;gap:12px}
+.metric{flex:1;padding:10px;border-radius:8px;background:#f8fafc;color:var(--muted)}
+
+canvas{max-width:100%}
+
+@media (max-width:720px){
+	.site-header{padding:12px}
+	.controls{flex-direction:column;align-items:stretch}
+}

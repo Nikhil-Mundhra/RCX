@@ -185,8 +185,9 @@ app.post('/api/properties', (req, res) => {
 
 app.get('/api/markets', (req, res) => res.json(markets));
 
-// Serve static client
+// Serve static client at root and also under /client for compatibility
 const clientPath = path.join(__dirname, 'client');
+app.use('/client', express.static(clientPath));
 app.use(express.static(clientPath));
 
 const PORT = process.env.PORT || 3000;
