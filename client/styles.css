@@ -18,6 +18,32 @@
 	--shadow-lg: 0 10px 15px 0 rgba(0, 0, 0, 0.1);
 }
 
+html[data-theme="dark"] {
+	--bg: #0f172a;
+	--bg-secondary: #1e293b;
+	--card: #1e293b;
+	--border: #334155;
+	--text: #f1f5f9;
+	--text-muted: #94a3b8;
+	--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 6px 0 rgba(0, 0, 0, 0.4);
+	--shadow-lg: 0 10px 15px 0 rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme="light"]) {
+		--bg: #0f172a;
+		--bg-secondary: #1e293b;
+		--card: #1e293b;
+		--border: #334155;
+		--text: #f1f5f9;
+		--text-muted: #94a3b8;
+		--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+		--shadow-md: 0 4px 6px 0 rgba(0, 0, 0, 0.4);
+		--shadow-lg: 0 10px 15px 0 rgba(0, 0, 0, 0.5);
+	}
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -80,6 +106,25 @@ body {
 }
 
 .nav a.active {
+	color: var(--accent);
+}
+
+.theme-toggle {
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	font-size: 18px;
+	padding: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s ease;
+	width: auto;
+	margin: 0;
+}
+
+.theme-toggle:hover {
 	color: var(--accent);
 }
 
@@ -374,6 +419,57 @@ section {
 	margin: 32px 0;
 }
 
+/* Footer */
+.site-footer {
+	background: var(--card);
+	border-top: 1px solid var(--border);
+	padding: 40px 0 20px;
+	margin-top: 60px;
+	color: var(--text-muted);
+	font-size: 14px;
+}
+
+.footer-content {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 32px;
+	margin-bottom: 32px;
+}
+
+.footer-section h4 {
+	color: var(--text);
+	margin-top: 0;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.footer-section ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.footer-section a {
+	color: var(--text-muted);
+	text-decoration: none;
+	font-size: 13px;
+	display: block;
+	margin: 8px 0;
+	transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+	color: var(--accent);
+}
+
+.footer-bottom {
+	border-top: 1px solid var(--border);
+	padding-top: 20px;
+	text-align: center;
+	font-size: 12px;
+}
+
 /* Links */
 a {
 	color: var(--accent);
@@ -437,6 +533,11 @@ a:hover {
 
 	.card {
 		padding: 16px;
+	}
+
+	.footer-content {
+		grid-template-columns: 1fr;
+		gap: 20px;
 	}
 }
 

@@ -6,7 +6,8 @@
     <title>Log In — RCX</title>
     <link rel="stylesheet" href="/styles.css">
     <style>
-      body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
       .auth-container { width: 100%; max-width: 400px; }
       .auth-container h2 { margin-top: 0; }
       .form-group { margin-bottom: 16px; }
@@ -17,23 +18,45 @@
     </style>
   </head>
   <body>
-    <div class="auth-container">
-      <div class="card elevated">
-        <h2>Log in to RCX</h2>
-        <form id="loginForm">
-          <div class="form-group">
-            <input id="email" placeholder="Email address" type="email" required />
+    <header class="site-header">
+      <div class="container" style="width: 100%;">
+        <a href="/" class="brand">RCX</a>
+        <nav class="nav">
+          <a href="/">Home</a>
+          <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="auth-container">
+        <div class="card elevated">
+          <h2>Log in to RCX</h2>
+          <form id="loginForm">
+            <div class="form-group">
+              <input id="email" placeholder="Email address" type="email" required />
+            </div>
+            <div class="form-group">
+              <input id="password" placeholder="Password" type="password" required />
+            </div>
+            <button type="submit">Log in</button>
+          </form>
+          <div class="auth-footer">
+            <p class="muted">Don't have an account? <a href="/client/signup.html">Sign up</a></p>
           </div>
-          <div class="form-group">
-            <input id="password" placeholder="Password" type="password" required />
-          </div>
-          <button type="submit">Log in</button>
-        </form>
-        <div class="auth-footer">
-          <p class="muted">Don't have an account? <a href="/client/signup.html">Sign up</a></p>
         </div>
       </div>
-    </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <p>&copy; 2026 RCX — Property Stock Exchange. Demo platform.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/theme.js"></script>
     <script src="/client/auth.js"></script>
   </body>
 </html>
