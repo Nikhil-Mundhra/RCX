@@ -4,45 +4,47 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RCX — Property Stock Exchange (Demo)</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 24px; }
-      header { margin-bottom: 16px }
-      .card { border: 1px solid #ddd; padding: 12px; margin-bottom: 8px; border-radius: 6px }
-    </style>
+    <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <header class="site-header container">
-      <div class="brand">RCX — Property Stock Exchange</div>
-      <nav class="nav">
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/client/signup.html">Sign up</a>
-        <a href="/client/login.html">Log in</a>
-      </nav>
+    <header class="site-header">
+      <div class="container" style="width: 100%;">
+        <a href="/" class="brand">RCX</a>
+        <nav class="nav">
+          <a href="/dashboard.html">Dashboard</a>
+          <a href="/client/signup.html">Sign up</a>
+          <a href="/client/login.html">Log in</a>
+        </nav>
+      </div>
     </header>
+
     <main class="container">
-      <section style="margin-top:18px">
-        <h2>Welcome to the RCX demo</h2>
-        <p class="muted">Explore portfolios, compare metrics, and sign up to try the demo auth flow.</p>
+      <section style="margin-top: 40px;">
+        <h1>Welcome to RCX</h1>
+        <p class="muted">Property Stock Exchange — Explore portfolios, compare metrics, and sign up to try the demo auth flow.</p>
       </section>
 
-    <section>
-      <h2>Markets</h2>
-      <div id="markets">Loading...</div>
-    </section>
+      <section>
+        <h2>Markets</h2>
+        <div id="markets" class="grid grid-2">Loading...</div>
+      </section>
 
-    <section>
-      <h2>Properties</h2>
-      <div id="properties">Loading...</div>
-      <h3>Add Property</h3>
-      <form id="addForm">
-        <input id="name" placeholder="Name" required />
-        <input id="location" placeholder="Location" required />
-        <input id="price" placeholder="Price" type="number" required />
-        <button type="submit">Add</button>
-      </form>
-    </section>
+      <section>
+        <h2>Properties</h2>
+        <div id="properties" class="grid grid-3">Loading...</div>
+        
+        <div class="card" style="margin-top: 32px;">
+          <h3>Add Property</h3>
+          <form id="addForm">
+            <input id="name" placeholder="Property Name" required />
+            <input id="location" placeholder="Location" required />
+            <input id="price" placeholder="Price ($)" type="number" required />
+            <button type="submit">Add Property</button>
+          </form>
+        </div>
+      </section>
+    </main>
 
     <script src="/app.js"></script>
-    </main>
   </body>
 </html>

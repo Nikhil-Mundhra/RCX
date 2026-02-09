@@ -27,7 +27,16 @@ function renderMetricsUI(metrics) {
   metrics.forEach(m => {
     const el = document.createElement('div');
     el.className = 'metric';
-    el.innerHTML = `<strong>${m.portfolioId}</strong><br/>Value: $${m.totalValue.toLocaleString()}<br/>Total Return: ${m.totalReturn}%<br/>Ann. Return: ${m.annualizedReturn}%<br/>Cap Rate: ${m.capRate}%<br/>Occupancy: ${m.occupancy}%`;
+    el.innerHTML = `
+      <div class="metric-label">Portfolio ${m.portfolioId}</div>
+      <div class="metric-value">$${m.totalValue.toLocaleString()}</div>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+        <div style="margin: 4px 0;"><strong>Return:</strong> ${m.totalReturn}%</div>
+        <div style="margin: 4px 0;"><strong>Ann. Return:</strong> ${m.annualizedReturn}%</div>
+        <div style="margin: 4px 0;"><strong>Cap Rate:</strong> ${m.capRate}%</div>
+        <div style="margin: 4px 0;"><strong>Occupancy:</strong> ${m.occupancy}%</div>
+      </div>
+    `;
     container.appendChild(el);
   });
 }
@@ -43,8 +52,8 @@ async function compare(p1, p2) {
   const labels = hist1.map(h => h.date);
   valuationChart.data.labels = labels;
   valuationChart.data.datasets = [
-    { label: `Portfolio ${p1}`, data: hist1.map(h => h.value), borderColor: '#007bff', backgroundColor: 'rgba(0,123,255,0.1)' },
-    { label: `Portfolio ${p2}`, data: hist2.map(h => h.value), borderColor: '#ff7b00', backgroundColor: 'rgba(255,123,0,0.1)' }
+    { label: `Portfolio ${p1}`, data: hist1.map(h => h.value), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.4 },
+    { label: `Portfolio ${p2}`, data: hist2.map(h => h.value), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 2, tension: 0.4 }
   ];
   valuationChart.update();
 
@@ -52,7 +61,7 @@ async function compare(p1, p2) {
 
   // prepare metrics for bar chart
   const metricLabels = ['totalReturn', 'annualizedReturn', 'capRate', 'occupancy'];
-  metricsChart.data.datasets = metrics.map((m, i) => ({ label: `P${m.portfolioId}`, data: metricLabels.map(k => m[k]), backgroundColor: i === 0 ? '#007bff' : '#ff7b00' }));
+  metricsChart.data.datasets = metrics.map((m, i) => ({ label: `Portfolio ${m.portfolioId}`, data: metricLabels.map(k => m[k]), backgroundColor: i === 0 ? '#3b82f6' : '#10b981' }));
   metricsChart.update();
 }
 

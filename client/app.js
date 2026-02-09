@@ -9,7 +9,10 @@ function renderMarkets(list) {
   list.forEach(m => {
     const d = document.createElement('div');
     d.className = 'card';
-    d.textContent = `${m.name} — ${m.status}`;
+    d.innerHTML = `
+      <h3 style="margin-top: 0;">${m.name}</h3>
+      <p class="muted" style="margin: 8px 0;">Status: <strong>${m.status}</strong></p>
+    `;
     el.appendChild(d);
   });
 }
@@ -19,8 +22,12 @@ function renderProperties(list) {
   el.innerHTML = '';
   list.forEach(p => {
     const d = document.createElement('div');
-    d.className = 'card';
-    d.innerHTML = `<strong>${p.name}</strong> — ${p.location} — $${p.price.toLocaleString()}`;
+    d.className = 'card property-card';
+    d.innerHTML = `
+      <h3 style="margin-top: 0;">${p.name}</h3>
+      <p class="property-meta">${p.location}</p>
+      <p class="property-price">$${p.price.toLocaleString()}</p>
+    `;
     el.appendChild(d);
   });
 }

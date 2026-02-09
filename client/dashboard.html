@@ -6,39 +6,52 @@
     <title>RCX Dashboard — Portfolio Management Demo</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 18px }
-      .row { display:flex; gap:16px; align-items:flex-start }
-      .col { flex:1 }
-      .card { border:1px solid #ddd; padding:12px; border-radius:8px; background:#fff }
-      .controls { margin-bottom:12px }
-      .metrics { display:flex; gap:12px; margin-top:12px }
-      .metric { padding:8px; border-radius:6px; background:#f7f7f7; flex:1 }
-    </style>
   </head>
   <body>
-    <h1>RCX Dashboard — Portfolio Management (Demo)</h1>
+    <header class="site-header">
+      <div class="container" style="width: 100%;">
+        <a href="/" class="brand">RCX</a>
+        <nav class="nav">
+          <a href="/">Home</a>
+          <a href="/client/login.html">Log in</a>
+        </nav>
+      </div>
+    </header>
 
-    <div class="controls card">
-      <label>Select portfolios to compare: </label>
-      <select id="p1"></select>
-      <select id="p2"></select>
-      <button id="compare">Compare</button>
-    </div>
-
-    <div class="row">
-      <div class="col card">
-        <h3>Portfolio Valuation Over Time</h3>
-        <canvas id="valuationChart" height="120"></canvas>
+    <main class="container">
+      <h1>Portfolio Dashboard</h1>
+      
+      <div class="card">
+        <h3>Compare Portfolios</h3>
+        <div class="controls" style="background: transparent; padding: 0; margin-bottom: 12px; gap: 12px;">
+          <label for="p1" style="margin: 0;">Portfolio 1:</label>
+          <select id="p1" style="flex: 1; width: auto; margin: 0;"></select>
+          
+          <label for="p2" style="margin: 0;">Portfolio 2:</label>
+          <select id="p2" style="flex: 1; width: auto; margin: 0;"></select>
+          
+          <button id="compare" style="width: auto; margin: 0;">Compare</button>
+        </div>
       </div>
 
-      <div class="col card">
-        <h3>Metrics Comparison</h3>
-        <div id="metrics" class="metrics"></div>
-        <h4>Bar comparison</h4>
-        <canvas id="metricsChart" height="200"></canvas>
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <h3>Portfolio Valuation Over Time</h3>
+            <canvas id="valuationChart" height="80"></canvas>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card">
+            <h3>Metrics Comparison</h3>
+            <div id="metrics" class="metrics"></div>
+            <h4>Bar comparison</h4>
+            <canvas id="metricsChart" height="150"></canvas>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
 
     <script src="/client/dashboard.js"></script>
   </body>
