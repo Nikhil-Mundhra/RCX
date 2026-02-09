@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RCX — Property Stock Exchange (Demo)</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; }
+      header { margin-bottom: 16px }
+      .card { border: 1px solid #ddd; padding: 12px; margin-bottom: 8px; border-radius: 6px }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RCX — Property Stock Exchange (Demo)</h1>
+      <p>Minimal demo client for the Node.js scaffold.</p>
+    </header>
+
+    <section>
+      <h2>Markets</h2>
+      <div id="markets">Loading...</div>
+    </section>
+
+    <section>
+      <h2>Properties</h2>
+      <div id="properties">Loading...</div>
+      <h3>Add Property</h3>
+      <form id="addForm">
+        <input id="name" placeholder="Name" required />
+        <input id="location" placeholder="Location" required />
+        <input id="price" placeholder="Price" type="number" required />
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
