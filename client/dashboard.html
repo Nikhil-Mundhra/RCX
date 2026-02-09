@@ -3,9 +3,78 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RCX Dashboard — Portfolio Management Demo</title>
+    <title>Dashboard — RCX</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      .dashboard-container { display: flex; flex: 1; gap: 0; background: var(--bg); }
+      .sidebar { width: 250px; background: var(--card); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px; box-shadow: var(--shadow-sm); }
+      .main-content { flex: 1; display: flex; flex-direction: column; overflow: auto; }
+      .top-bar { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); }
+      .top-bar .user-info { display: flex; align-items: center; gap: 12px; }
+      .top-bar .btn { width: auto; margin: 0; padding: 8px 16px; }
+      .content-area { flex: 1; overflow-y: auto; padding: 20px; }
+      
+      .sidebar-section { margin-bottom: 24px; }
+      .sidebar-section h4 { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin: 12px 0 8px; font-weight: 600; letter-spacing: 0.5px; }
+      .sidebar-link { display: block; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 13px; transition: all 0.2s ease; margin-bottom: 4px; cursor: pointer; border-left: 3px solid transparent; }
+      .sidebar-link:hover { background: var(--bg-secondary); color: var(--text); }
+      .sidebar-link.active { background: var(--bg-secondary); color: var(--accent); border-left-color: var(--accent); }
+      .watchlist-item { padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; border-radius: 6px; background: var(--bg-secondary); cursor: pointer; }
+      .watchlist-item:hover { background: var(--border); }
+      .watchlist-symbol { font-weight: 600; color: var(--accent); }
+      
+      .stock-header { margin-bottom: 20px; }
+      .stock-title { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+      .stock-title h1 { margin: 0; }
+      .price-section { display: flex; gap: 20px; align-items: baseline; margin-bottom: 20px; }
+      .current-price { font-size: 32px; font-weight: 700; color: var(--text); }
+      .price-change { font-size: 18px; padding: 6px 12px; border-radius: 6px; }
+      .price-change.positive { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+      .price-change.negative { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+      
+      .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+      
+      .overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .overview-item { padding: 12px; background: var(--bg-secondary); border-radius: 8px; }
+      .overview-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+      .overview-value { font-size: 16px; font-weight: 600; color: var(--text); }
+      
+      .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; margin-top: -4px; }
+      .tab-btn { padding: 12px 16px; border: none; background: none; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+      .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+      .tab-btn:hover { color: var(--text); }
+      
+      .chart-container { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+      .welcome-banner { background: linear-gradient(90deg, rgba(59,130,246,0.08), rgba(16,185,129,0.05)); border: 1px solid rgba(59,130,246,0.12); padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; font-weight: 600; color: var(--accent); }
+      .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+      
+      .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+      .portfolio-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+      .portfolio-name { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+      .portfolio-metric { display: flex; justify-content: space-between; font-size: 12px; margin: 6px 0; }
+      .portfolio-metric-label { color: var(--text-muted); }
+      .portfolio-metric-value { font-weight: 600; color: var(--accent); }
+      
+      .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      
+      @media (max-width: 1200px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      
+      @media (max-width: 768px) {
+        .dashboard-container { flex-direction: column; }
+        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 12px; max-height: 200px; overflow-x: auto; display: flex; gap: 16px; }
+        .sidebar-section { margin-bottom: 0; }
+        .main-content { min-height: auto; }
+        .top-bar { flex-direction: column; gap: 12px; align-items: stretch; }
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .metrics-grid { grid-template-columns: 1fr; }
+        .price-section { flex-direction: column; gap: 8px; }
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -20,40 +89,137 @@
       </div>
     </header>
 
-    <main class="container">
-      <h1>Portfolio Dashboard</h1>
-      
-      <div class="card">
-        <h3>Compare Portfolios</h3>
-        <div class="controls" style="background: transparent; padding: 0; margin-bottom: 12px; gap: 12px;">
-          <label for="p1" style="margin: 0;">Portfolio 1:</label>
-          <select id="p1" style="flex: 1; width: auto; margin: 0;"></select>
-          
-          <label for="p2" style="margin: 0;">Portfolio 2:</label>
-          <select id="p2" style="flex: 1; width: auto; margin: 0;"></select>
-          
-          <button id="compare" style="width: auto; margin: 0;">Compare</button>
+    <div class="dashboard-container">
+      <div class="sidebar">
+        <div class="sidebar-section">
+          <h4>My Account</h4>
+          <div id="userGreeting" style="padding: 8px 0; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
+          <a class="sidebar-link active" data-view="market">📊 Market Overview</a>
+          <a class="sidebar-link" data-view="my-assets">💼 My Assets</a>
+          <a class="sidebar-link" data-view="portfolio">🎯 Portfolio</a>
+          <a style="cursor: pointer; display: block; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 13px; transition: all 0.2s ease; border-left: 3px solid transparent;" id="logoutBtn">🚪 Logout</a>
+        </div>
+
+        <div class="sidebar-section">
+          <h4>Watchlist</h4>
+          <div id="watchlist"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <h4>Portfolios</h4>
+          <div id="portfolioList"></div>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col">
-          <div class="card">
-            <h3>Portfolio Valuation Over Time</h3>
-            <canvas id="valuationChart" height="80"></canvas>
+      <div class="main-content">
+        <div class="top-bar">
+          <div style="flex: 1;">
+            <input type="text" id="searchBox" placeholder="Search properties..." style="max-width: 400px;">
+          </div>
+          <div class="user-info">
+            <span id="userEmail" style="font-size: 13px;"></span>
           </div>
         </div>
 
-        <div class="col">
-          <div class="card">
-            <h3>Metrics Comparison</h3>
-            <div id="metrics" class="metrics"></div>
-            <h4>Bar comparison</h4>
-            <canvas id="metricsChart" height="150"></canvas>
+        <div class="content-area">
+          <div id="marketView">
+            <div id="welcomeBannerHolder"></div>
+            <div class="stock-header">
+              <div class="stock-title">
+                <div>
+                  <h1 id="selectedProperty">Property Market</h1>
+                  <p class="muted" id="selectedSymbol"></p>
+                </div>
+                <button id="watchlistBtn" class="btn secondary" style="width: auto;">+ Watchlist</button>
+              </div>
+              <div class="price-section">
+                <div class="current-price" id="currentPrice">$1.2M</div>
+                <div id="priceChangeDiv" class="price-change positive">
+                  <span id="priceChange">+2.5%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="overview">Overview</button>
+              <button class="tab-btn" data-tab="chart">Chart</button>
+              <button class="tab-btn" data-tab="metrics">Metrics</button>
+            </div>
+
+            <div id="overviewTab" class="tab-content">
+              <div class="dashboard-grid">
+                <div class="card">
+                  <div class="chart-title">Market Data</div>
+                  <div class="overview-card">
+                    <div class="overview-item">
+                      <div class="overview-label">Current Price</div>
+                      <div class="overview-value" id="overviewPrice">$1.2M</div>
+                    </div>
+                    <div class="overview-item">
+                      <div class="overview-label">24h Change</div>
+                      <div class="overview-value" id="overviewChange">+2.5%</div>
+                    </div>
+                    <div class="overview-item">
+                      <div class="overview-label">Market Cap</div>
+                      <div class="overview-value">$4.8B</div>
+                    </div>
+                    <div class="overview-item">
+                      <div class="overview-label">Volume</div>
+                      <div class="overview-value">$250M</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="chart-title">About</div>
+                  <p id="propertyDescription" style="font-size: 13px; line-height: 1.6; margin: 0;"></p>
+                </div>
+              </div>
+            </div>
+
+            <div id="chartTab" class="tab-content" style="display: none;">
+              <div class="card">
+                <div class="chart-title">Price History (36 Months)</div>
+                <canvas id="priceChart" height="80"></canvas>
+              </div>
+            </div>
+
+            <div id="metricsTab" class="tab-content" style="display: none;">
+              <div class="card">
+                <div class="chart-title">Key Metrics</div>
+                <div class="metrics-grid">
+                  <div class="overview-item">
+                    <div class="overview-label">Total Return</div>
+                    <div class="overview-value" id="metricReturn">—</div>
+                  </div>
+                  <div class="overview-item">
+                    <div class="overview-label">Annualized Return</div>
+                    <div class="overview-value" id="metricAnnualized">—</div>
+                  </div>
+                  <div class="overview-item">
+                    <div class="overview-label">Cap Rate</div>
+                    <div class="overview-value" id="metricCapRate">—</div>
+                  </div>
+                  <div class="overview-item">
+                    <div class="overview-label">Occupancy</div>
+                    <div class="overview-value" id="metricOccupancy">—</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="myAssetsView" style="display: none;">
+            <h2>My Assets</h2>
+            <div id="watchlistDisplay" class="grid grid-3"></div>
+          </div>
+
+          <div id="portfolioView" style="display: none;">
+            <h2>My Portfolios</h2>
+            <div id="portfoliosDisplay" class="portfolio-grid"></div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
 
     <footer class="site-footer">
       <div class="container">
@@ -71,6 +237,257 @@
     </footer>
 
     <script src="/theme.js"></script>
-    <script src="/client/dashboard.js"></script>
+    <script src="/client/auth.js"></script>
+    <script>
+      let allProperties = [];
+      let userWatchlist = [];
+      let selectedPropertyId = 1;
+      let priceChart = null;
+
+      window.addEventListener('load', async () => {
+        console.debug('[dashboard] page load - checking auth');
+        await RCXAuth.requireAuth();
+        const user = await RCXAuth.getCurrentUser();
+        console.debug('[dashboard] current user', user);
+        if (user) {
+          document.getElementById('userGreeting').textContent = `Welcome, ${user.name || 'User'}!`;
+          document.getElementById('userEmail').textContent = user.email;
+          // show transient welcome banner if coming from signup
+          try {
+            const welcomeName = localStorage.getItem('rcx_welcome');
+            if (welcomeName) {
+              const holder = document.getElementById('welcomeBannerHolder');
+              const b = document.createElement('div');
+              b.className = 'welcome-banner';
+              b.textContent = `Welcome to your dashboard, ${welcomeName}!`;
+              holder.appendChild(b);
+              setTimeout(() => { b.style.transition = 'opacity 400ms'; b.style.opacity = '0'; setTimeout(() => b.remove(), 500); }, 3500);
+              localStorage.removeItem('rcx_welcome');
+            }
+          } catch (e) {}
+        }
+        await loadProperties();
+        console.debug('[dashboard] properties loaded', allProperties && allProperties.length);
+        await loadWatchlist();
+        console.debug('[dashboard] watchlist loaded', userWatchlist && userWatchlist.length);
+        await loadPortfolios();
+        displayProperty(1);
+      });
+
+      async function loadProperties() {
+        try {
+          const res = await fetch('/api/properties');
+          allProperties = await res.json();
+          renderPropertyList();
+        } catch (e) {
+          console.error('Failed to load properties:', e);
+        }
+      }
+
+      async function loadWatchlist() {
+        try {
+          const res = await RCXAuth.authFetch('/api/user/watchlist');
+          if (res.ok) {
+            userWatchlist = await res.json();
+            renderWatchlist();
+          }
+        } catch (e) {
+          console.error('Failed to load watchlist:', e);
+        }
+      }
+
+      async function loadPortfolios() {
+        try {
+          const res = await fetch('/api/portfolios');
+          const portfolios = await res.json();
+          renderPortfolios(portfolios);
+        } catch (e) {
+          console.error('Failed to load portfolios:', e);
+        }
+      }
+
+      function renderPropertyList() {
+        const container = document.getElementById('watchlist');
+        if (container) {
+          container.innerHTML = allProperties.map(p => `
+            <div class="watchlist-item" onclick="displayProperty(${p.id})">
+              <div class="watchlist-symbol">${p.symbol}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">$${(p.price / 1000000).toFixed(1)}M</div>
+            </div>
+          `).join('');
+        }
+      }
+
+      function renderWatchlist() {
+        const display = document.getElementById('watchlistDisplay');
+        if (display && userWatchlist.length > 0) {
+          display.innerHTML = userWatchlist.map(p => `
+            <div class="card">
+              <h3>${p.name}</h3>
+              <p class="muted">${p.location}</p>
+              <p style="font-size: 18px; font-weight: 700; color: var(--accent-2);">$${(p.price / 1000000).toFixed(1)}M</p>
+              <button onclick="removeFromWatchlist(${p.id})" class="btn danger" style="width: 100%; margin-top: 12px; padding: 8px;">Remove</button>
+            </div>
+          `).join('');
+        } else if (display) {
+          display.innerHTML = '<p class="muted">No items in watchlist</p>';
+        }
+      }
+
+      function renderPortfolios(portfolios) {
+        const display = document.getElementById('portfoliosDisplay');
+        if (display) {
+          display.innerHTML = portfolios.map(p => `
+            <div class="portfolio-item">
+              <div class="portfolio-name">${p.name}</div>
+              <div class="portfolio-metric">
+                <span class="portfolio-metric-label">Holdings</span>
+                <span class="portfolio-metric-value">${p.holdings.length} properties</span>
+              </div>
+              <button onclick="viewPortfolio(${p.id})" class="btn secondary" style="width: 100%; margin-top: 12px; padding: 8px;">View Details</button>
+            </div>
+          `).join('');
+        }
+      }
+
+      async function displayProperty(propertyId) {
+        selectedPropertyId = propertyId;
+        const property = allProperties.find(p => p.id === propertyId);
+        if (!property) return;
+
+        document.getElementById('selectedProperty').textContent = property.name;
+        document.getElementById('selectedSymbol').textContent = `${property.symbol} • ${property.location}`;
+        document.getElementById('currentPrice').textContent = `$${(property.price / 1000000).toFixed(1)}M`;
+        document.getElementById('overviewPrice').textContent = `$${(property.price / 1000000).toFixed(1)}M`;
+        document.getElementById('overviewChange').textContent = `${property.change > 0 ? '+' : ''}${property.change.toFixed(1)}%`;
+        document.getElementById('priceChange').textContent = `${property.change > 0 ? '+' : ''}${property.change.toFixed(1)}%`;
+        document.getElementById('propertyDescription').textContent = 
+          `${property.name} is a premium real estate investment located in ${property.location}. Current market value: $${(property.price / 1000000).toFixed(1)}M. This property offers excellent long-term appreciation potential.`;
+
+        const isInWatchlist = userWatchlist.some(p => p.id === propertyId);
+        const btn = document.getElementById('watchlistBtn');
+        btn.textContent = isInWatchlist ? '✓ In Watchlist' : '+ Watchlist';
+        btn.onclick = () => isInWatchlist ? removeFromWatchlist(propertyId) : addToWatchlistItem(propertyId);
+
+        try {
+          const res = await fetch(`/api/properties/${propertyId}`);
+          const data = await res.json();
+          displayChart(data.history);
+
+          const metrics = data.metrics;
+          document.getElementById('metricReturn').textContent = `${metrics.totalReturn}%`;
+          document.getElementById('metricAnnualized').textContent = `${metrics.annualizedReturn}%`;
+          document.getElementById('metricCapRate').textContent = `${metrics.capRate}%`;
+          document.getElementById('metricOccupancy').textContent = `${metrics.occupancy}%`;
+        } catch (e) {
+          console.error('Failed to load property details:', e);
+        }
+      }
+
+      function displayChart(history) {
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        
+        if (priceChart) {
+          priceChart.destroy();
+        }
+
+        priceChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: history.map(h => h.date),
+            datasets: [{
+              label: 'Price',
+              data: history.map(h => h.value),
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.05)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: false, grid: { color: 'rgba(100, 100, 100, 0.1)' } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      async function addToWatchlistItem(propertyId) {
+        try {
+          const res = await RCXAuth.authFetch(`/api/user/watchlist/${propertyId}`, { method: 'POST' });
+          if (res.ok) {
+            await loadWatchlist();
+            displayProperty(selectedPropertyId);
+          }
+        } catch (e) {
+          alert('Failed to add to watchlist');
+        }
+      }
+
+      async function removeFromWatchlist(propertyId) {
+        try {
+          const res = await RCXAuth.authFetch(`/api/user/watchlist/${propertyId}`, { method: 'DELETE' });
+          if (res.ok) {
+            await loadWatchlist();
+            if (selectedPropertyId === propertyId) {
+              displayProperty(allProperties[0]?.id || 1);
+            }
+          }
+        } catch (e) {
+          alert('Failed to remove from watchlist');
+        }
+      }
+
+      document.querySelectorAll('[data-view]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          
+          document.getElementById('marketView').style.display = 'none';
+          document.getElementById('myAssetsView').style.display = 'none';
+          document.getElementById('portfolioView').style.display = 'none';
+          
+          const view = e.target.dataset.view;
+          if (view === 'market') document.getElementById('marketView').style.display = 'block';
+          else if (view === 'my-assets') document.getElementById('myAssetsView').style.display = 'block';
+          else if (view === 'portfolio') document.getElementById('portfolioView').style.display = 'block';
+        });
+      });
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+          
+          e.target.classList.add('active');
+          const tab = e.target.dataset.tab;
+          document.getElementById(tab + 'Tab').style.display = 'block';
+        });
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        RCXAuth.logout();
+      });
+
+      document.getElementById('searchBox').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = allProperties.filter(p => 
+          p.name.toLowerCase().includes(query) || 
+          p.symbol.toLowerCase().includes(query)
+        );
+        if (filtered.length > 0) {
+          displayProperty(filtered[0].id);
+        }
+      });
+
+      function viewPortfolio(portfolioId) {
+        alert(`Portfolio ${portfolioId} details coming soon!`);
+      }
+    </script>
   </body>
 </html>
